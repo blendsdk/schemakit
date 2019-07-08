@@ -1,44 +1,7 @@
-import { Pool, QueryResult } from "pg";
 import { Database } from "./Database";
 import { ForeignKeyConstraint } from "./ForeignKeyConstraint";
 import { Table } from "./Table";
 import { eDBColumnType, eDBConstraintType, eDBForeignKeyAction } from "./Types";
-import { log } from "../utils/Utils";
-
-/**
- * The global PG Pool object.
- */
-let pool: Pool = new Pool();
-
-/**
- * Interface for configuring a database connection
- *
- * @export
- * @interface IConnection
- */
-export interface IConnection {
-    host: string;
-    database: string;
-    user: string;
-    password: string;
-    port?: string;
-}
-
-export function createConnection(config: IConnection) {
-    pool = new Pool(config as any)
-}
-
-/**
- * Executes a SQL statement and returns a QueryResult object
- *
- * @param {string} stmt
- * @param {any[]} [params]
- * @returns {Promise<QueryResult>}
- */
-function executeQuery(stmt: string, params?: any[]): Promise<QueryResult> {
-    log(`${stmt};`);
-    return pool.query(stmt, params || []);
-}
 
 /**
  * This class is generated a PostgreSQL database based on the Database/Table
@@ -228,7 +191,7 @@ export class PostgreSQLDatabase extends Database {
      * @override
      * @memberof PostgreSQLDatabase
      */
-    public create() {
+    public create(): string[] {
         Object.keys(this.schemas).forEach(schema => {
             this.rebuildSchema(schema);
         })
@@ -244,8 +207,6 @@ export class PostgreSQLDatabase extends Database {
         this.tables.forEach(table => {
             this.createForeignKeyConstraints(table);
         });
-        executeQuery(this.script.join(";\n")).then(() => {
-            pool.end();
-        });
+        return this.script;
     }
 }
