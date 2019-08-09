@@ -3,6 +3,8 @@ import { Table } from "../database/Table";
 import { eDBColumnType } from "../database/Types";
 import { camelCase } from "@blendsdk/stdlib/dist/camelCase";
 import { tabsToSpaces, renderTemplate } from "../utils/utils";
+import { Column } from "../database/Column";
+import { wrapInArray } from "@blendsdk/stdlib/dist/wrapInArray";
 
 /**
  * Maps generic types to typescript types.
@@ -38,11 +40,26 @@ function mapColumnType(type: eDBColumnType): string {
  * @param {Table} table
  * @returns
  */
-function generateInterface(table: Table) {
+function generateInterfaceForTable(table: Table) {
+    return generateInterface(
+        table.getName(),
+        table.getColumns()
+    );
+}
+
+/**
+ * Generates an interface
+ *
+ * @export
+ * @param {string} tableName
+ * @param {(Column | Column[])} column
+ * @returns
+ */
+export function generateInterface(tableName: string, column: Column | Column[]) {
     return renderTemplate("typescript/interface.ejs", {
-        name: `I${camelCase(table.getName().replace(/\./gi, "_"))}`,
-        columns: table.getColumns(),
-        tableName: table.getName(),
+        name: `I${camelCase(tableName.replace(/\./gi, "_"))}`,
+        columns: wrapInArray(column),
+        tableName: tableName,
         mapType: mapColumnType
     });
 }
@@ -58,7 +75,7 @@ function generateInterface(table: Table) {
 export function createTypes(outFile: string, tables: Table[]) {
     const result: string[] = [];
     tables.forEach(table => {
-        result.push(generateInterface(table).trim());
+        result.push(generateInterfaceForTable(table).trim());
     });
     fs.writeFileSync(outFile, tabsToSpaces(result.join("\n\n")));
 }
