@@ -1,8 +1,5 @@
 import { PostgreSQLDatabase } from "../src";
-
-const has = (lines: string[], line: string) => {
-    return lines.indexOf(line) !== -1;
-};
+import { has } from "./has";
 
 test("create table public", async () => {
     const db = new PostgreSQLDatabase();
