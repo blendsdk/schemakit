@@ -35,12 +35,10 @@ export class PostgreSQLDatabase extends Database {
      * @returns {Table}
      * @memberof PostgreSQLDatabase
      */
-    public addTable(name: string): Table {
-        const parts = name.split('.');
-        if (parts.length === 2) {
-            this.schemas[parts[0]] = true;
-        }
-        return super.addTable(name);
+    public addTable(name: string, schema?: string): Table {
+        schema = schema || "public";
+        this.schemas[schema] = true;
+        return super.addTable(name, schema);
     }
 
     /**
@@ -127,7 +125,7 @@ export class PostgreSQLDatabase extends Database {
                     column.getType()
                 )} ${column.isRequired() ? "NOT NULL" : ""} ${
                     column.getDefault() ? `DEFAULT ${column.getDefault()}` : ""
-                    } ${column.getCheck() ? `CHECK (${column.getCheck()})` : ""}`.trim()
+                } ${column.getCheck() ? `CHECK (${column.getCheck()})` : ""}`.trim()
             );
         });
     }
@@ -174,10 +172,10 @@ export class PostgreSQLDatabase extends Database {
                 `ALTER TABLE ${table.getName()} ADD FOREIGN KEY (${item
                     .getColumnNames()
                     .join(",")}) REFERENCES ${item.getRefTable().getName()} (${item
-                        .getRefColumns()
-                        .join(",")}) ON UPDATE ${me.mapRefAction(item.getOnUpdate())} ON DELETE ${me.mapRefAction(
-                            item.getOnDelete()
-                        )}`
+                    .getRefColumns()
+                    .join(",")}) ON UPDATE ${me.mapRefAction(item.getOnUpdate())} ON DELETE ${me.mapRefAction(
+                    item.getOnDelete()
+                )}`
             );
         });
     }
@@ -193,8 +191,10 @@ export class PostgreSQLDatabase extends Database {
      */
     public create(): string[] {
         Object.keys(this.schemas).forEach(schema => {
-            this.rebuildSchema(schema);
-        })
+            if (schema !== "public") {
+                this.rebuildSchema(schema);
+            }
+        });
         this.tables.forEach(table => {
             this.dropTable(table);
         });

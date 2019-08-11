@@ -1,5 +1,5 @@
 import * as ejs from "ejs";
-import { logInfo, errorAndExit } from "../utils/log";
+import { errorAndExit, logInfo } from "../utils/log";
 import { renderTemplate } from "../utils/Utils";
 
 export const command: string = "database [config]";
@@ -11,6 +11,4 @@ export const builder: any = {
     }
 };
 
-export const handler = (argv: any) => {
-
-};
+export const handler = (argv: any) => {};

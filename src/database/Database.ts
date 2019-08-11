@@ -34,7 +34,7 @@ export abstract class Database extends Base {
      * @memberof Database
      */
     public constructor() {
-        super('');
+        super("");
         this.tables = [];
     }
 
@@ -45,8 +45,8 @@ export abstract class Database extends Base {
      * @returns {Table}
      * @memberof Database
      */
-    public addTable(name: string): Table {
-        this.tables.push(new Table(name));
+    public addTable(name: string, schema?: string): Table {
+        this.tables.push(new Table(name, schema));
         return this.tables[this.tables.length - 1];
     }
 

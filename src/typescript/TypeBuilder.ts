@@ -1,10 +1,10 @@
+import { camelCase } from "@blendsdk/stdlib/dist/camelCase";
+import { wrapInArray } from "@blendsdk/stdlib/dist/wrapInArray";
 import * as fs from "fs";
+import { Column } from "../database/Column";
 import { Table } from "../database/Table";
 import { eDBColumnType } from "../database/Types";
-import { camelCase } from "@blendsdk/stdlib/dist/camelCase";
-import { tabsToSpaces, renderTemplate } from "../utils/utils";
-import { Column } from "../database/Column";
-import { wrapInArray } from "@blendsdk/stdlib/dist/wrapInArray";
+import { renderTemplate, tabsToSpaces } from "../utils/utils";
 
 /**
  * Maps generic types to typescript types.
@@ -41,10 +41,7 @@ function mapColumnType(type: eDBColumnType): string {
  * @returns
  */
 function generateInterfaceForTable(table: Table) {
-    return generateInterface(
-        table.getName(),
-        table.getColumns()
-    );
+    return generateInterface(table.getName(), table.getColumns());
 }
 
 /**
@@ -59,7 +56,7 @@ export function generateInterface(tableName: string, column: Column | Column[]) 
     return renderTemplate("typescript/interface.ejs", {
         name: `I${camelCase(tableName.replace(/\./gi, "_"))}`,
         columns: wrapInArray(column),
-        tableName: tableName,
+        tableName,
         mapType: mapColumnType
     });
 }

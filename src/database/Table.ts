@@ -14,16 +14,29 @@ import { eDBColumnType, eDBConstraintType, IColumnOptions, IForeignKeyAction } f
 export class Table extends Base {
     protected columns: Column[];
     protected constraints: Constraint[];
+    protected schema: string;
 
     /**
      * Creates an instance of Table.
      * @param {string} name
+     * @param {string} [schema]
      * @memberof Table
      */
-    public constructor(name: string) {
+    public constructor(name: string, schema?: string) {
         super(name);
         this.columns = [];
         this.constraints = [];
+        this.schema = schema || "public";
+    }
+
+    /**
+     * Get the name of this object.
+     *
+     * @returns {string}
+     * @memberof Base
+     */
+    public getName(): string {
+        return `${this.schema !== "public" ? `${this.schema}.` : ""}${this.name}`;
     }
 
     /**
