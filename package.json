@@ -1,6 +1,6 @@
 {
   "name": "@blendsdk/schemakit",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "A PostgreSQL schema and related TypeScript type generator",
   "main": "dist/index.js",
   "author": "Gevik Babakhani <gevikb@gmail.com>",
